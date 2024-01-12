@@ -1,6 +1,7 @@
 const {response}=require('express');
 const bcrypt = require('bcryptjs');
 const Usuario = require('../models/Usuario');
+const {generarJWT} = require('../helpers/jwt');
 
 //New
 //async, se espera...
@@ -20,23 +21,25 @@ const crearUsuario = async (req,res=response)=>{
                  msg: 'Email repetido:'+usuario.email
              });
          }
-                 
-       
 
          //... Hasta que esto se graba o regresa error      
          usuario=new Usuario(req.body);  
 
            //Encriptar contraseña
            const salt = bcrypt.genSaltSync();
-           usuario.password = bcrypt.hashSync(password,salt);  
+           usuario.password = bcrypt.hashSync(password,salt);             
 
          await usuario.save();
+
+         //Generar Token
+         const token = await generarJWT(usuario.id, usuario.name);
 
          res.status(201).json({
             ok:true,
             msg:'Post - Registrar new',
             uid:usuario.id,
-            name:usuario.name
+            name:usuario.name,
+            token
         })
 
     }  catch (error) {
@@ -74,10 +77,15 @@ const loginUsuario = async (req,res=response)=>{
                 msg:'Password incorrecto'
             });
         } 
+        //Generar token
+        const token = await generarJWT(usuario.id, usuario.name);
+
     //Si pwd válido    
     res.json({
         ok:true,
-        msg:'Genear token'
+        uid:usuario.id,
+        name:usuario.name,
+        token
     })
 
     } catch(error) {
@@ -99,13 +107,20 @@ const loginUsuario = async (req,res=response)=>{
 }
 
 
+const revalidarToken = async (req,res=response)=>{
+    //console.log('Renovando...');
+    // const uid=req.uid;
+    // const name=req.name;
 
+    const {uid,name} = req;
 
-const revalidarToken = (req,res=response)=>{
-    console.log('Renew');
+    // Generar nuevo JWT y retornarlo en esa petición
+
+    const token = await generarJWT(uid,name);
+
     res.json({
         ok:true,
-        msg:'Revalidar'
+        token
     })
 }
 
