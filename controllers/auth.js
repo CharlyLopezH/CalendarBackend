@@ -5,10 +5,22 @@ const {generarJWT} = require('../helpers/jwt');
 
 //New
 //async, se espera...
+
+const getUsuarios = (req,res=response)=> {
+    console.log('Lista de usuarios');
+    res(
+        {
+        
+            ok:true,
+            msg:'Listar usuarios'
+        }    
+    )
+}
+
 const crearUsuario = async (req,res=response)=>{
     
     const {email, password} = req.body;    
-    console.log('El email:' +email);
+    console.log('El email está Ok:' +email);
 
     try { 
         let usuario = await Usuario.findOne({email});        
@@ -56,7 +68,7 @@ const crearUsuario = async (req,res=response)=>{
 const loginUsuario = async (req,res=response)=>{    
     console.log('End point: http://localhost:4000/api/auth/')
     const {email,password} = req.body;
-    console.log(email+'/'+password);
+    console.log('Hasta aquí todo Ok-->>'+email+'/'+password);
 
     try {
         const usuario = await Usuario.findOne({email});
@@ -108,7 +120,7 @@ const loginUsuario = async (req,res=response)=>{
 
 
 const revalidarToken = async (req,res=response)=>{
-    //console.log('Renovando...');
+    console.log('Renovando...');
     // const uid=req.uid;
     // const name=req.name;
 
@@ -126,6 +138,7 @@ const revalidarToken = async (req,res=response)=>{
 
 
 module.exports = {
+    getUsuarios,
     crearUsuario,
     loginUsuario,
     revalidarToken

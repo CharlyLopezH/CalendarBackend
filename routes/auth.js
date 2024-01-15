@@ -9,8 +9,9 @@ const {validarJWT}=require('../middlewares/validar-jwt');
 
 const router=Router();
 
-//Desestrucuración de las funciones definidas en el controller, necesarias para la composición del ruteo
+//Desestructuración de las funciones definidas en el controller, necesarias para la composición del ruteo
 
+//Ruta para Crear
 //http://localhost:4000/api/auth/new
 router.post('/new',
             //middlewares
@@ -18,22 +19,19 @@ router.post('/new',
             check('name','El nombre es obligatorio').not().isEmpty(),
             check('email','El email es obligatorio').isEmail(),
             check('password','Password obligatorio (+6 chars)').isLength({min:6}),            
-            validarCampos,            ],                               
+            validarCampos,            
+            ],                               
             crearUsuario );
-
-//http://localhost:4000/api/auth/
+//Login, ruta para Loggin
+//http://localhost:4000/api/auth
 router.post('/', 
             //middleware
             [
               check('email','El email es obligatorio').isEmail(),
               check('password','Password obligatorio').isLength({min:6}),
-              validarCampos  
-            ],
-            
-            loginUsuario );
-          
+              validarCampos,                
+            ],            
+            loginUsuario );          
 router.get('/renew',validarJWT, revalidarToken );
-
-
 
 module.exports = router;
