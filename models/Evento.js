@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose');
-
 const EventoSchema = Schema({
 
     title: {
@@ -22,7 +21,6 @@ const EventoSchema = Schema({
         ref: 'Usuario',
         required: true
     }
-
 });
 
 EventoSchema.method('toJSON', function() {
@@ -30,7 +28,5 @@ EventoSchema.method('toJSON', function() {
     object.id = _id;
     return object;
 });
-
-
 
 module.exports = model('Evento', EventoSchema );

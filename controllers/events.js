@@ -1,4 +1,5 @@
 const { response } = require("express");
+const mongoose = require('mongoose');
 const Evento = require('../models/Evento');
 
 
@@ -20,7 +21,7 @@ const crearEvento = async (req,res=response) => {
   //const {title, start, end} = req.body;
   //Verificar que viene el evento
   // Grabar en la BD
-  const evento=new Evento(req.body);
+  const evento=new  Evento(req.body);
 
   try {
     evento.user = req.uid;
@@ -39,13 +40,15 @@ const crearEvento = async (req,res=response) => {
   
 }
 
-const actualizarEvento = (req,res=response)=> { 
+const actualizarEvento = async (req,res=response)=> { 
   
   const eventoId = req.params.id;
   console.log('eventoId antes del Try '+eventoId);
   
   try {
-    const evento = Evento.findById( eventoId );        
+    const evento = await Evento.findById( eventoId );     
+    
+    //console.log("evento: "+evento);
 
     // El evento no existe, de hecho no existen ningún evento; sin embargo no entra al siguiente if
     if(!evento){
