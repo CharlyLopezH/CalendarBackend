@@ -28,9 +28,9 @@ app.use(express.static('public'));
 app.use(express.json());
 
 
-// Rutas
+// Definición de Rutas
 //TODO: auth //crear, login, renew
 app.use('/api/auth', require('./routes/auth'));
 
-app.use('/api/events', require('./routes/events'));
 //TODO: CRUD: Eventos
+app.use('/api/events', require('./routes/events'));

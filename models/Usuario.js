@@ -4,16 +4,16 @@ const UsuarioSchema = Schema({
 
     name:{
         type: String,
-        requiere: true
+        requiered: true
     },
     email:{
         type: String,
-        requiere: true,
+        requiered: true,
         unique: true
     },
     password:{
         type: String,
-        requiere: true
+        requiered: true
 
     }
 });

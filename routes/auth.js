@@ -21,7 +21,8 @@ router.post('/new',
             check('password','Password obligatorio (+6 chars)').isLength({min:6}),            
             validarCampos,            
             ],                               
-            crearUsuario );
+            crearUsuario);
+
 //Login, ruta para Loggin
 //http://localhost:4000/api/auth
 router.post('/', 
@@ -31,7 +32,9 @@ router.post('/',
               check('password','Password obligatorio').isLength({min:6}),
               validarCampos,                
             ],            
-            loginUsuario );          
+            loginUsuario );         
+//Ruta para renovar el token
+//http://localhost:4000/api/auth/renew (Nota:requiere x-token)             
 router.get('/renew',validarJWT, revalidarToken );
 
 module.exports = router;

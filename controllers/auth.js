@@ -68,6 +68,8 @@ const crearUsuario = async (req,res=response)=>{
 const loginUsuario = async (req,res=response)=>{    
     console.log('End point: http://localhost:4000/api/auth/')
     const {email,password} = req.body;
+
+
     console.log('Hasta aquí todo Ok-->>'+email+'/'+password);
 
     try {
@@ -77,7 +79,7 @@ const loginUsuario = async (req,res=response)=>{
             return res.status(400).json({
                 ok:false,
                 msg:'El usuario no existe'
-            })
+            });
         }
 
         //Verificación - comparación de passwords
@@ -89,8 +91,10 @@ const loginUsuario = async (req,res=response)=>{
                 msg:'Password incorrecto'
             });
         } 
-        //Generar token
+        //Generar JWT
         const token = await generarJWT(usuario.id, usuario.name);
+
+        
 
     //Si pwd válido    
     res.json({
@@ -105,17 +109,10 @@ const loginUsuario = async (req,res=response)=>{
         res.status(500).json
         ({
             ok:false, 
-            msg:'Llama al admin...'
+            msg:'Hablar al admin...'
         })
 
     }
-
-    res.status(201).json({
-        ok:true,
-        msg:'Post - Login ok, generar Token',
-        password,
-        email
-    })
 }
 
 
@@ -123,11 +120,9 @@ const revalidarToken = async (req,res=response)=>{
     console.log('Renovando...');
     // const uid=req.uid;
     // const name=req.name;
-
     const {uid,name} = req;
 
     // Generar nuevo JWT y retornarlo en esa petición
-
     const token = await generarJWT(uid,name);
 
     res.json({
