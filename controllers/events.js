@@ -42,14 +42,12 @@ const crearEvento = async (req,res=response) => {
 const actualizarEvento = (req,res=response)=> { 
   
   const eventoId = req.params.id;
-
   console.log('eventoId antes del Try '+eventoId);
   
   try {
+    const evento = Evento.findById( eventoId );        
 
-    const evento = Evento.findById( '' );    
-    console.log('El Evento... Id: '+evento);
-
+    // El evento no existe, de hecho no existen ningún evento; sin embargo no entra al siguiente if
     if(!evento){
       return res.status(404).json(
         {
