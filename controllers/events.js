@@ -32,7 +32,7 @@ const crearEvento = async (req,res=response) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({
+    return res.status(500).json({
       ok:false,
       msg:'Hablar con el administrador'
     });
@@ -40,43 +40,108 @@ const crearEvento = async (req,res=response) => {
   
 }
 
-const actualizarEvento = async (req,res=response)=> { 
-  
-  const eventoId = req.params.id;
-  console.log('eventoId antes del Try '+eventoId);
-  
-  try {
-    const evento = await Evento.findById( eventoId );     
+const actualizarEvento = async( req, res = response ) => {
     
-    //console.log("evento: "+evento);
+  const eventoId = req.params.id;
+  const uid = req.uid;
 
-    // El evento no existe, de hecho no existen ningún evento; sin embargo no entra al siguiente if
-    if(!evento){
-      return res.status(404).json(
-        {
-          ok:false,
-          msg:'No existe evento con Id: '+eventoId
-        }
-        )
-    }
-
-  }catch(error) {
-    console.log(error);
+   // Verificar si el eventoId es un ObjectId válido
+   if (!mongoose.Types.ObjectId.isValid(eventoId)) {
+    return res.status(400).json({
+      ok: false,
+      msg: 'El formato del ID del evento no es válido'
+    });
   }
-  
-res.json({  
-    ok: true,
-    msg: "actualizarEvento",
-    eventoId
-  });
+
+  try {
+
+      const evento = await Evento.findById( eventoId );
+
+      if ( !evento ) {
+          return res.status(404).json({
+              ok: false,
+              msg: 'Evento no existe por ese id'
+          });
+      }
+
+      if ( evento.user.toString() !== uid ) {
+          return res.status(401).json({
+              ok: false,
+              msg: 'No tiene privilegio de editar este evento'
+          });
+      }
+
+      const nuevoEvento = {
+          ...req.body,
+          user: uid
+      }
+
+      const eventoActualizado = await Evento.findByIdAndUpdate( eventoId, nuevoEvento, { new: true } );
+
+      res.json({
+          ok: true,
+          evento: eventoActualizado
+      });
+
+      
+  } catch (error) {
+      console.log(error);
+     res.status(500).json({
+          ok: false,
+          msg: 'Hable con el administrador'
+      });
+  }
+
 }
 
-const eliminarEvento = (req,res=response)=> {
-  res.json({
-    //12345345
-    ok: true,
-    msg: "eliminarEvento",
-  });
+//Eliminar Evento
+const eliminarEvento = async (req,res=response)=> {
+
+  const eventoId = req.params.id;
+  const uid = req.uid;
+
+  if (!mongoose.Types.ObjectId.isValid(eventoId)) {
+    return res.status(400).json({
+      ok: false,
+      msg: 'El formato del ID del evento no es válido'
+    });
+  }
+
+
+  //Si el eventoId tiene un formato válido... intentar
+  try {
+  const evento = await Evento.findById( eventoId );
+    if ( !evento ) {
+      return res.status(404).json({
+          ok: false,
+          msg: 'Evento no existe por ese id'
+      });
+    }
+
+    if ( evento.user.toString() !== uid ) {
+      return res.status(401).json({
+          ok: false,
+          msg: 'No tiene privilegio de eliminar este evento'
+      });
+  }
+
+
+    //Si llegamos hasta aquí y no hubo error, podemos borrar el registro con el id
+    const eventoEliminado = await Evento.findByIdAndDelete( eventoId );
+    res.json({
+        ok: true,
+        msg: `Evento ${eventoId} eliminado`
+    });
+
+    
+
+  } catch (error) {
+    console.log(error);
+   return  res.status(500).json({
+    ok: false,
+    msg: 'Hable con el administrador'
+    });  
+  } 
 }
 
 module.exports = {
